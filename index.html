@@ -1,0 +1,852 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pr1mera Planta · Bar Restaurante en Green Park Altorreal, Molina de Segura</title>
+<meta name="description" content="Pr1mera Planta — gastronomía, terraza y buen ambiente en el Centro Comercial Green Park Altorreal, Molina de Segura (Murcia). Reserva tu mesa.">
+
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          ink: '#19120D',
+          surface: '#241A14',
+          surface2: '#2D2018',
+          copper: '#C9854B',
+          copperlight: '#E2A86C',
+          sage: '#7E8F62',
+          cream: '#F4E9DA',
+          mute: '#B6A493',
+          line: 'rgba(244,233,218,0.12)',
+        },
+        fontFamily: {
+          display: ['"Fraunces"', 'serif'],
+          sans: ['"Inter"', 'sans-serif'],
+        },
+      }
+    }
+  }
+</script>
+
+<style>
+  html { scroll-behavior: smooth; }
+  body { background-color: #19120D; }
+  .badge-floor {
+    font-family: 'Fraunces', serif;
+    font-variant-numeric: oldstyle-nums;
+  }
+  .eyebrow {
+    letter-spacing: 0.22em;
+  }
+  .nav-link { position: relative; }
+  .nav-link::after {
+    content: '';
+    position: absolute;
+    left: 0; bottom: -4px;
+    width: 0%; height: 1px;
+    background: #C9854B;
+    transition: width .3s ease;
+  }
+  .nav-link:hover::after { width: 100%; }
+
+  .btn-copper {
+    transition: transform .35s cubic-bezier(.2,.8,.2,1), box-shadow .35s ease, background-color .35s ease;
+    box-shadow: 0 0 0 0 rgba(201,133,75,0);
+  }
+  .btn-copper:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 28px -8px rgba(201,133,75,0.55);
+    background-color: #E2A86C;
+  }
+  .btn-outline {
+    transition: all .35s ease;
+  }
+  .btn-outline:hover {
+    background-color: rgba(244,233,218,0.08);
+    border-color: #F4E9DA;
+    transform: translateY(-2px);
+  }
+
+  .hero-bg {
+    background-image:
+      linear-gradient(180deg, rgba(25,18,13,0.35) 0%, rgba(25,18,13,0.55) 55%, rgba(25,18,13,0.96) 100%),
+      url('https://images.unsplash.com/photo-1559339352-11d035aa65de?q=80&w=2400&auto=format&fit=crop');
+    background-size: cover;
+    background-position: center 35%;
+  }
+
+  .level-line {
+    position: absolute;
+    left: 28px; top: 0; bottom: 0;
+    width: 1px;
+    background: linear-gradient(180deg, transparent, rgba(201,133,75,0.5), transparent);
+  }
+
+  .menu-tab.active {
+    color: #19120D;
+    background-color: #C9854B;
+  }
+  .menu-panel { display: none; }
+  .menu-panel.active { display: block; }
+
+  .card-dish {
+    transition: transform .3s ease, border-color .3s ease, background-color .3s ease;
+  }
+  .card-dish:hover {
+    transform: translateY(-3px);
+    border-color: rgba(201,133,75,0.45);
+    background-color: rgba(244,233,218,0.04);
+  }
+
+  .field-input {
+    transition: border-color .25s ease, background-color .25s ease;
+  }
+  .field-input:focus {
+    outline: none;
+    border-color: #C9854B;
+    background-color: rgba(244,233,218,0.06);
+  }
+  .field-input:focus-visible, button:focus-visible, a:focus-visible {
+    outline: 2px solid #C9854B;
+    outline-offset: 2px;
+  }
+
+  #successModal {
+    transition: opacity .35s ease;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; animation: none !important; }
+  }
+
+  .fade-up {
+    opacity: 0;
+    transform: translateY(18px);
+    transition: opacity .7s ease, transform .7s ease;
+  }
+  .fade-up.in-view {
+    opacity: 1;
+    transform: translateY(0);
+  }
+</style>
+</head>
+
+<body class="bg-ink text-cream font-sans antialiased">
+
+<!-- ============ NAV ============ -->
+<header id="siteHeader" class="fixed top-0 inset-x-0 z-50 transition-colors duration-300">
+  <div class="max-w-7xl mx-auto px-6 lg:px-10 flex items-center justify-between h-20">
+    <a href="#inicio" class="flex items-center gap-2">
+      <span class="badge-floor text-2xl text-copperlight">P<span class="text-cream">1</span></span>
+      <span class="font-display text-lg tracking-wide">Pr<span class="text-copperlight">1</span>mera Planta</span>
+    </a>
+
+    <nav class="hidden md:flex items-center gap-9 text-sm eyebrow uppercase text-mute">
+      <a href="#espacio" class="nav-link hover:text-cream">El Espacio</a>
+      <a href="#carta" class="nav-link hover:text-cream">Carta</a>
+      <a href="#reservas" class="nav-link hover:text-cream">Reservas</a>
+      <a href="#contacto" class="nav-link hover:text-cream">Contacto</a>
+    </nav>
+
+    <a href="#reservas" class="hidden md:inline-block btn-copper bg-copper text-ink font-semibold text-sm px-5 py-2.5 rounded-full">
+      Reservar Mesa
+    </a>
+
+    <button id="menuToggle" aria-label="Abrir menú" class="md:hidden text-cream">
+      <svg id="iconOpen" xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5M3.75 17.25h16.5" />
+      </svg>
+    </button>
+  </div>
+
+  <!-- mobile nav -->
+  <div id="mobileNav" class="md:hidden hidden bg-ink/98 border-t border-line px-6 py-6 flex flex-col gap-5 text-base">
+    <a href="#espacio" class="mobile-link">El Espacio</a>
+    <a href="#carta" class="mobile-link">Carta</a>
+    <a href="#reservas" class="mobile-link">Reservas</a>
+    <a href="#contacto" class="mobile-link">Contacto</a>
+    <a href="#reservas" class="btn-copper bg-copper text-ink text-center font-semibold px-5 py-3 rounded-full">Reservar Mesa</a>
+  </div>
+</header>
+
+<!-- ============ HERO ============ -->
+<section id="inicio" class="hero-bg relative min-h-screen flex items-end">
+  <div class="max-w-7xl mx-auto w-full px-6 lg:px-10 pb-24 pt-40">
+    <div class="inline-flex items-center gap-3 badge-floor border border-copper/50 rounded-full px-4 py-1.5 mb-7 text-xs eyebrow uppercase text-copperlight">
+      <span class="h-1.5 w-1.5 rounded-full bg-copper"></span>
+      Green Park Altorreal · Molina de Segura
+    </div>
+
+    <h1 class="font-display font-medium text-4xl sm:text-5xl lg:text-7xl leading-[1.05] max-w-4xl text-cream">
+      Gastronomía, buen ambiente y las mejores vistas en Altorreal
+    </h1>
+
+    <p class="mt-6 max-w-xl text-mute text-lg leading-relaxed">
+      Una terraza luminosa, una barra con carácter y una carta pensada para compartir. Sube a la primera planta y quédate a disfrutar de la tarde.
+    </p>
+
+    <div class="mt-10 flex flex-col sm:flex-row gap-4">
+      <a href="#reservas" class="btn-copper bg-copper text-ink font-semibold text-center px-8 py-4 rounded-full">
+        Reservar Mesa
+      </a>
+      <a href="#carta" class="btn-outline border border-cream/40 text-cream font-semibold text-center px-8 py-4 rounded-full">
+        Ver la Carta
+      </a>
+    </div>
+
+    <p class="mt-8 text-mute/80 text-sm max-w-md">
+      Aquí el tapeo va a tu ritmo: te traemos la tapa a la mesa y tú decides si la quieres. Solo pagas lo que aceptas.
+    </p>
+  </div>
+
+  <a href="#espacio" aria-label="Bajar" class="hidden sm:flex absolute bottom-8 right-10 h-11 w-11 rounded-full border border-cream/30 items-center justify-center text-cream/70 hover:text-cream hover:border-cream transition">
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+    </svg>
+  </a>
+</section>
+
+<!-- ============ SOBRE NOSOTROS / EL ESPACIO ============ -->
+<section id="espacio" class="relative bg-ink py-28 lg:py-36 overflow-hidden">
+  <div class="level-line hidden lg:block"></div>
+  <div class="max-w-7xl mx-auto px-6 lg:px-10 grid lg:grid-cols-2 gap-16 items-center">
+    <div class="fade-up">
+      <span class="badge-floor text-copperlight text-sm eyebrow uppercase">01 · El Espacio</span>
+      <h2 class="font-display font-medium text-3xl sm:text-4xl lg:text-5xl mt-4 leading-tight">
+        Una terraza con altura, en el corazón de Altorreal
+      </h2>
+      <p class="mt-6 text-mute text-lg leading-relaxed">
+        Pr1mera Planta ocupa un rincón privilegiado del Centro Comercial Green Park Altorreal, con una terraza abierta pensada para alargar las sobremesas y un interior cálido donde la barra es protagonista.
+      </p>
+      <p class="mt-4 text-mute text-lg leading-relaxed">
+        Mobiliario en madera y latón, luz cálida al caer la tarde y un servicio cercano: el lugar perfecto para una cerveza rápida en la barra o una comida sin prisa con buena compañía.
+      </p>
+
+      <div class="mt-10 grid grid-cols-3 gap-6 border-t border-line pt-8">
+        <div>
+          <p class="font-display text-3xl text-copperlight">10-20€</p>
+          <p class="text-xs eyebrow uppercase text-mute mt-1">Precio medio</p>
+        </div>
+        <div>
+          <p class="font-display text-3xl text-copperlight">Terraza</p>
+          <p class="text-xs eyebrow uppercase text-mute mt-1">Al aire libre</p>
+        </div>
+        <div>
+          <p class="font-display text-3xl text-copperlight">20:00</p>
+          <p class="text-xs eyebrow uppercase text-mute mt-1">Hora de apertura</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="fade-up grid grid-cols-2 gap-4">
+      <img src="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?q=80&w=1200&auto=format&fit=crop"
+           alt="Terraza moderna del restaurante" class="rounded-2xl object-cover h-72 w-full col-span-2 shadow-2xl shadow-black/40">
+      <img src="https://images.unsplash.com/photo-1466978913421-dad2ebd01d17?q=80&w=900&auto=format&fit=crop"
+           alt="Barra y ambiente del local" class="rounded-2xl object-cover h-44 w-full shadow-xl shadow-black/30">
+      <img src="https://images.unsplash.com/photo-1414235077428-338989a2e8c0?q=80&w=900&auto=format&fit=crop"
+           alt="Plato preparado en el restaurante" class="rounded-2xl object-cover h-44 w-full shadow-xl shadow-black/30">
+    </div>
+  </div>
+</section>
+
+<!-- ============ CÓMO FUNCIONA EL TAPEO ============ -->
+<section class="relative bg-surface2 py-24 lg:py-32 border-y border-line">
+  <div class="max-w-7xl mx-auto px-6 lg:px-10">
+    <div class="text-center max-w-2xl mx-auto fade-up">
+      <span class="badge-floor text-copperlight text-sm eyebrow uppercase">Un tapeo distinto</span>
+      <h2 class="font-display font-medium text-3xl sm:text-4xl lg:text-5xl mt-4">Tú decides, tapa a tapa</h2>
+      <p class="mt-5 text-mute text-lg">Nada de pedir a ciegas. Vamos pasando por las mesas con cada tapa recién hecha y tú eliges si se queda o no. Así de simple.</p>
+    </div>
+
+    <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-14">
+      <div class="fade-up border border-line rounded-2xl p-7">
+        <span class="badge-floor text-copperlight text-3xl">01</span>
+        <h3 class="font-display text-xl mt-4">Te sientas</h3>
+        <p class="text-mute text-sm mt-2 leading-relaxed">En la barra o en la terraza, como prefieras.</p>
+      </div>
+      <div class="fade-up border border-line rounded-2xl p-7">
+        <span class="badge-floor text-copperlight text-3xl">02</span>
+        <h3 class="font-display text-xl mt-4">Te traemos la tapa</h3>
+        <p class="text-mute text-sm mt-2 leading-relaxed">Vamos rotando platos recién salidos de cocina, sin que tengas que pedir nada.</p>
+      </div>
+      <div class="fade-up border border-line rounded-2xl p-7">
+        <span class="badge-floor text-copperlight text-3xl">03</span>
+        <h3 class="font-display text-xl mt-4">Tú eliges</h3>
+        <p class="text-mute text-sm mt-2 leading-relaxed">Si te apetece, te la dejamos — una por persona en la mesa. Si no, seguimos a la siguiente.</p>
+      </div>
+      <div class="fade-up border border-line rounded-2xl p-7">
+        <span class="badge-floor text-copperlight text-3xl">04</span>
+        <h3 class="font-display text-xl mt-4">Pagas lo que has comido</h3>
+        <p class="text-mute text-sm mt-2 leading-relaxed">La cuenta se hace solo con las tapas que has aceptado, contadas tal cual.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CARTA ============ -->
+<section id="carta" class="relative bg-surface py-28 lg:py-36">
+  <div class="max-w-7xl mx-auto px-6 lg:px-10">
+    <div class="text-center max-w-2xl mx-auto fade-up">
+      <span class="badge-floor text-copperlight text-sm eyebrow uppercase">02 · La Carta</span>
+      <h2 class="font-display font-medium text-3xl sm:text-4xl lg:text-5xl mt-4">Para compartir, sin prisa</h2>
+      <p class="mt-5 text-mute text-lg">Este es el repertorio de tapas que va pasando por las mesas, además de los platos principales y bebidas que puedes pedir directamente. Precios por unidad / persona.</p>
+    </div>
+
+    <!-- tabs -->
+    <div class="flex justify-center gap-3 mt-12 mb-12 flex-wrap fade-up">
+      <button data-tab="tapas" class="menu-tab active px-6 py-2.5 rounded-full text-sm eyebrow uppercase border border-cream/15 transition">Tapas</button>
+      <button data-tab="principales" class="menu-tab px-6 py-2.5 rounded-full text-sm eyebrow uppercase border border-cream/15 transition">Platos Principales</button>
+      <button data-tab="bebidas" class="menu-tab px-6 py-2.5 rounded-full text-sm eyebrow uppercase border border-cream/15 transition">Bebidas</button>
+    </div>
+
+    <!-- TAPAS -->
+    <div id="panel-tapas" class="menu-panel active fade-up">
+      <p class="text-center text-mute/70 text-sm mb-8 -mt-2">Precio por tapa y persona · solo se cobra lo que aceptas en la mesa.</p>
+      <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+        <div class="card-dish border border-line rounded-xl p-6">
+          <div class="flex justify-between items-baseline gap-3"><h3 class="font-display text-xl">Croquetas de jamón ibérico</h3><span class="text-copperlight font-semibold">10,50€</span></div>
+          <p class="text-mute text-sm mt-2">Cremosas, hechas a diario. Ración de 8 unidades.</p>
+        </div>
+        <div class="card-dish border border-line rounded-xl p-6">
+          <div class="flex justify-between items-baseline gap-3"><h3 class="font-display text-xl">Patatas Pr1mera Planta</h3><span class="text-copperlight font-semibold">8,90€</span></div>
+          <p class="text-mute text-sm mt-2">Patata confitada, alioli ahumado y crujiente de jamón.</p>
+        </div>
+        <div class="card-dish border border-line rounded-xl p-6">
+          <div class="flex justify-between items-baseline gap-3"><h3 class="font-display text-xl">Tataki de atún rojo</h3><span class="text-copperlight font-semibold">13,50€</span></div>
+          <p class="text-mute text-sm mt-2">Sésamo tostado, soja dulce y aguacate.</p>
+        </div>
+        <div class="card-dish border border-line rounded-xl p-6">
+          <div class="flex justify-between items-baseline gap-3"><h3 class="font-display text-xl">Tabla de quesos curados</h3><span class="text-copperlight font-semibold">14,00€</span></div>
+          <p class="text-mute text-sm mt-2">Selección de queso murciano con mermelada de higo.</p>
+        </div>
+        <div class="card-dish border border-line rounded-xl p-6">
+          <div class="flex justify-between items-baseline gap-3"><h3 class="font-display text-xl">Gyozas de verdura</h3><span class="text-copperlight font-semibold">9,50€</span></div>
+          <p class="text-mute text-sm mt-2">Salteadas, salsa teriyaki casera.</p>
+        </div>
+        <div class="card-dish border border-line rounded-xl p-6">
+          <div class="flex justify-between items-baseline gap-3"><h3 class="font-display text-xl">Pan de cristal con tomate</h3><span class="text-copperlight font-semibold">6,50€</span></div>
+          <p class="text-mute text-sm mt-2">Aceite de oliva virgen extra y sal en escamas.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- PRINCIPALES -->
+    <div id="panel-principales" class="menu-panel fade-up">
+      <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+        <div class="card-dish border border-line rounded-xl p-6">
+          <div class="flex justify-between items-baseline gap-3"><h3 class="font-display text-xl">Arroz meloso de marisco</h3><span class="text-copperlight font-semibold">18,50€</span></div>
+          <p class="text-mute text-sm mt-2">Para dos personas. Fumet de pescado de la lonja.</p>
+        </div>
+        <div class="card-dish border border-line rounded-xl p-6">
+          <div class="flex justify-between items-baseline gap-3"><h3 class="font-display text-xl">Entrecot a la brasa</h3><span class="text-copperlight font-semibold">19,90€</span></div>
+          <p class="text-mute text-sm mt-2">Con patatas confitadas y pimientos de padrón.</p>
+        </div>
+        <div class="card-dish border border-line rounded-xl p-6">
+          <div class="flex justify-between items-baseline gap-3"><h3 class="font-display text-xl">Burger Pr1mera Planta</h3><span class="text-copperlight font-semibold">14,50€</span></div>
+          <p class="text-mute text-sm mt-2">Carne madurada, queso curado y cebolla caramelizada.</p>
+        </div>
+        <div class="card-dish border border-line rounded-xl p-6">
+          <div class="flex justify-between items-baseline gap-3"><h3 class="font-display text-xl">Lubina a la plancha</h3><span class="text-copperlight font-semibold">17,90€</span></div>
+          <p class="text-mute text-sm mt-2">Con verduras de temporada salteadas.</p>
+        </div>
+        <div class="card-dish border border-line rounded-xl p-6">
+          <div class="flex justify-between items-baseline gap-3"><h3 class="font-display text-xl">Risotto de boletus</h3><span class="text-copperlight font-semibold">15,50€</span></div>
+          <p class="text-mute text-sm mt-2">Cremoso, con parmesano curado 24 meses.</p>
+        </div>
+        <div class="card-dish border border-line rounded-xl p-6">
+          <div class="flex justify-between items-baseline gap-3"><h3 class="font-display text-xl">Ensalada templada de pato</h3><span class="text-copperlight font-semibold">13,90€</span></div>
+          <p class="text-mute text-sm mt-2">Magret, vinagreta de frutos rojos y brotes tiernos.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- BEBIDAS -->
+    <div id="panel-bebidas" class="menu-panel fade-up">
+      <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+        <div class="card-dish border border-line rounded-xl p-6">
+          <div class="flex justify-between items-baseline gap-3"><h3 class="font-display text-xl">Caña / Copa de vino</h3><span class="text-copperlight font-semibold">3,20€</span></div>
+          <p class="text-mute text-sm mt-2">Selección de cervezas de barril y vinos D.O. Jumilla.</p>
+        </div>
+        <div class="card-dish border border-line rounded-xl p-6">
+          <div class="flex justify-between items-baseline gap-3"><h3 class="font-display text-xl">Gin Tonic Premium</h3><span class="text-copperlight font-semibold">9,50€</span></div>
+          <p class="text-mute text-sm mt-2">Ginebras seleccionadas con botánicos frescos.</p>
+        </div>
+        <div class="card-dish border border-line rounded-xl p-6">
+          <div class="flex justify-between items-baseline gap-3"><h3 class="font-display text-xl">Cóctel de autor</h3><span class="text-copperlight font-semibold">8,90€</span></div>
+          <p class="text-mute text-sm mt-2">Carta de coctelería de temporada, pregunta a tu camarero.</p>
+        </div>
+        <div class="card-dish border border-line rounded-xl p-6">
+          <div class="flex justify-between items-baseline gap-3"><h3 class="font-display text-xl">Vermut de grifo</h3><span class="text-copperlight font-semibold">4,00€</span></div>
+          <p class="text-mute text-sm mt-2">Con aceitunas y patatas fritas caseras.</p>
+        </div>
+        <div class="card-dish border border-line rounded-xl p-6">
+          <div class="flex justify-between items-baseline gap-3"><h3 class="font-display text-xl">Limonada de la casa</h3><span class="text-copperlight font-semibold">4,50€</span></div>
+          <p class="text-mute text-sm mt-2">Hierbabuena fresca y un toque de jengibre.</p>
+        </div>
+        <div class="card-dish border border-line rounded-xl p-6">
+          <div class="flex justify-between items-baseline gap-3"><h3 class="font-display text-xl">Café e infusiones</h3><span class="text-copperlight font-semibold">2,20€</span></div>
+          <p class="text-mute text-sm mt-2">Tueste natural, selección de infusiones premium.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ RESERVAS ============ -->
+<section id="reservas" class="relative bg-ink py-28 lg:py-36 overflow-hidden">
+  <div class="level-line hidden lg:block"></div>
+  <div class="max-w-5xl mx-auto px-6 lg:px-10">
+    <div class="text-center max-w-2xl mx-auto fade-up">
+      <span class="badge-floor text-copperlight text-sm eyebrow uppercase">03 · Reservas</span>
+      <h2 class="font-display font-medium text-3xl sm:text-4xl lg:text-5xl mt-4">Resérvanos tu mesa</h2>
+      <p class="mt-5 text-mute text-lg">Elige fecha y turno: verás las mesas que quedan libres en tiempo real. Para grupos de 7 o más, llámanos directamente.</p>
+    </div>
+
+    <form id="reservaForm" novalidate class="fade-up mt-14 bg-surface border border-line rounded-3xl p-7 sm:p-12 grid sm:grid-cols-2 gap-6">
+
+      <div class="sm:col-span-2">
+        <label for="nombre" class="block text-xs eyebrow uppercase text-mute mb-2">Nombre y apellidos</label>
+        <input type="text" id="nombre" name="nombre" placeholder="Tu nombre"
+          class="field-input w-full bg-ink/60 border border-line rounded-lg px-4 py-3.5 text-cream placeholder:text-mute/60">
+        <p class="error-msg hidden text-red-400 text-xs mt-1.5"></p>
+      </div>
+
+      <div>
+        <label for="telefono" class="block text-xs eyebrow uppercase text-mute mb-2">Teléfono</label>
+        <input type="tel" id="telefono" name="telefono" placeholder="600 000 000"
+          class="field-input w-full bg-ink/60 border border-line rounded-lg px-4 py-3.5 text-cream placeholder:text-mute/60">
+        <p class="error-msg hidden text-red-400 text-xs mt-1.5"></p>
+      </div>
+
+      <div>
+        <label for="personas" class="block text-xs eyebrow uppercase text-mute mb-2">Número de personas</label>
+        <select id="personas" name="personas"
+          class="field-input w-full bg-ink/60 border border-line rounded-lg px-4 py-3.5 text-cream">
+          <option value="">Selecciona</option>
+          <option>1 persona</option>
+          <option>2 personas</option>
+          <option>3 personas</option>
+          <option>4 personas</option>
+          <option>5 personas</option>
+          <option>6 personas</option>
+          <option>7 o más (llámanos)</option>
+        </select>
+        <p class="error-msg hidden text-red-400 text-xs mt-1.5"></p>
+      </div>
+
+      <div>
+        <label for="fecha" class="block text-xs eyebrow uppercase text-mute mb-2">Fecha</label>
+        <input type="date" id="fecha" name="fecha"
+          class="field-input w-full bg-ink/60 border border-line rounded-lg px-4 py-3.5 text-cream">
+        <p class="error-msg hidden text-red-400 text-xs mt-1.5"></p>
+      </div>
+
+      <div class="sm:col-span-2" id="turnoWrap">
+        <label class="block text-xs eyebrow uppercase text-mute mb-2">Turno</label>
+        <div id="turnoGrid" class="grid grid-cols-2 sm:grid-cols-4 gap-2.5"></div>
+        <input type="hidden" id="hora" name="hora">
+        <p class="error-msg hidden text-red-400 text-xs mt-2"></p>
+        <p id="aforoNota" class="text-mute/60 text-xs mt-2.5">Abrimos a las 20:00h · aforo de 20 mesas por turno.</p>
+      </div>
+
+      <div class="sm:col-span-2 mt-2">
+        <button type="submit" class="btn-copper w-full sm:w-auto bg-copper text-ink font-semibold px-10 py-4 rounded-full">
+          Confirmar Reserva
+        </button>
+      </div>
+    </form>
+
+    <p class="fade-up text-center text-mute/50 text-xs mt-6">
+      Demo de reservas: este prototipo guarda los datos en este navegador para mostrar cómo funcionaría el panel. La versión final se conecta a un servidor para que reservas, calendario y avisos por email funcionen en todos los dispositivos.
+    </p>
+  </div>
+</section>
+
+<!-- ============ SUCCESS MODAL ============ -->
+<div id="successModal" class="hidden fixed inset-0 z-[100] items-center justify-center bg-ink/90 backdrop-blur-sm px-6 opacity-0">
+  <div class="bg-surface border border-copper/40 rounded-3xl max-w-md w-full p-10 text-center shadow-2xl">
+    <div class="mx-auto h-16 w-16 rounded-full bg-copper/15 flex items-center justify-center mb-6">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-copperlight" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+      </svg>
+    </div>
+    <h3 class="font-display text-2xl">¡Reserva enviada!</h3>
+    <p id="successDetail" class="text-mute mt-3 leading-relaxed"></p>
+    <div class="flex flex-col sm:flex-row gap-3 mt-8">
+      <a id="addToCalendar" href="#" target="_blank" rel="noopener"
+         class="btn-outline flex-1 border border-cream/30 text-cream font-semibold px-6 py-3 rounded-full text-sm">
+        Añadir a Google Calendar
+      </a>
+      <button id="closeModal" class="btn-copper flex-1 bg-copper text-ink font-semibold px-6 py-3 rounded-full text-sm">Entendido</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ FOOTER ============ -->
+<footer id="contacto" class="bg-surface2 border-t border-line">
+  <div class="max-w-7xl mx-auto px-6 lg:px-10 py-16 grid sm:grid-cols-2 lg:grid-cols-4 gap-12">
+    <div>
+      <span class="font-display text-xl">Pr<span class="text-copperlight">1</span>mera Planta</span>
+      <p class="text-mute text-sm mt-4 leading-relaxed">Bar restaurante en el Centro Comercial Green Park Altorreal. Terraza, buen ambiente y carta de mercado.</p>
+    </div>
+
+    <div>
+      <h4 class="text-xs eyebrow uppercase text-copperlight mb-4">Horario</h4>
+      <p class="text-mute text-sm leading-relaxed">Todos los días<br>20:00 — 00:30h</p>
+    </div>
+
+    <div>
+      <h4 class="text-xs eyebrow uppercase text-copperlight mb-4">Dirección</h4>
+      <a href="https://www.google.com/maps/search/?api=1&query=Centro+Comercial+Green+Park+Altorreal,+Av.+del+Golf,+100,+30506+Molina+de+Segura,+Murcia"
+         target="_blank" rel="noopener"
+         class="text-mute text-sm leading-relaxed hover:text-copperlight transition">
+        C.C. Green Park Altorreal<br>Av. del Golf, 100<br>30506 Molina de Segura, Murcia
+      </a>
+    </div>
+
+    <div>
+      <h4 class="text-xs eyebrow uppercase text-copperlight mb-4">Contacto</h4>
+      <a href="tel:677400400" class="text-mute text-sm hover:text-copperlight transition">677 40 04 00</a>
+      <div class="flex gap-4 mt-5">
+        <a href="#" aria-label="Instagram" class="h-9 w-9 rounded-full border border-line flex items-center justify-center hover:border-copper hover:text-copperlight transition">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.2c3.2 0 3.58.01 4.85.07 1.17.05 1.97.24 2.43.4a4.9 4.9 0 011.77 1.15 4.9 4.9 0 011.15 1.77c.16.46.35 1.26.4 2.43.06 1.27.07 1.65.07 4.85s-.01 3.58-.07 4.85c-.05 1.17-.24 1.97-.4 2.43a4.9 4.9 0 01-1.15 1.77 4.9 4.9 0 01-1.77 1.15c-.46.16-1.26.35-2.43.4-1.27.06-1.65.07-4.85.07s-3.58-.01-4.85-.07c-1.17-.05-1.97-.24-2.43-.4a4.9 4.9 0 01-1.77-1.15 4.9 4.9 0 01-1.15-1.77c-.16-.46-.35-1.26-.4-2.43C2.21 15.58 2.2 15.2 2.2 12s.01-3.58.07-4.85c.05-1.17.24-1.97.4-2.43a4.9 4.9 0 011.15-1.77A4.9 4.9 0 015.6 1.8c.46-.16 1.26-.35 2.43-.4C9.3 1.34 9.67 1.33 12.87 1.33z"/></svg>
+        </a>
+        <a href="#" aria-label="Facebook" class="h-9 w-9 rounded-full border border-line flex items-center justify-center hover:border-copper hover:text-copperlight transition">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="currentColor" viewBox="0 0 24 24"><path d="M22 12.06C22 6.5 17.52 2 12 2S2 6.5 2 12.06c0 5 3.66 9.15 8.44 9.94v-7.03H7.9v-2.91h2.54V9.85c0-2.5 1.49-3.89 3.78-3.89 1.1 0 2.24.2 2.24.2v2.46h-1.26c-1.24 0-1.63.77-1.63 1.56v1.88h2.78l-.45 2.91h-2.33V22c4.78-.79 8.44-4.94 8.44-9.94z"/></svg>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <div class="border-t border-line py-6">
+    <p class="text-center text-mute/60 text-xs px-6">© <span id="year"></span> Pr1mera Planta · C.C. Green Park Altorreal, Molina de Segura · Todos los derechos reservados · <a href="admin.html" class="hover:text-copperlight transition">Acceso staff</a></p>
+  </div>
+</footer>
+
+<script>
+/* === Motor de reservas (antes en reservas.js, ahora integrado aqui para que funcione sin depender de archivos externos) === */
+/* =========================================================
+   Pr1mera Planta — Motor de reservas (DEMO)
+   ---------------------------------------------------------
+   Esto es un PROTOTIPO funcional que guarda las reservas en
+   localStorage (solo en este navegador). Sirve para validar
+   la experiencia (aforo por turno, panel de admin, enlaces a
+   Google Calendar) antes de construir el backend real.
+
+   Para producción de verdad (que la reserva de un cliente
+   desde su móvil aparezca en el ordenador del restaurante,
+   y que lleguen emails automáticos) hace falta un servidor +
+   base de datos. Ver nota al final del archivo.
+   ========================================================= */
+
+const P1_KEY = 'p1_reservas_demo';
+const P1_TOTAL_MESAS = 20; // aforo total del local por turno
+const P1_DURACION_MESA_MIN = 90; // minutos que se considera ocupada una mesa
+const P1_SLOTS = ['20:00','20:30','21:00','21:30','22:00','22:30','23:00','23:30'];
+
+const P1_DIRECCION = 'C.C. Green Park Altorreal, Av. del Golf, 100, 30506 Molina de Segura, Murcia';
+const P1_TELEFONO = '677400400';
+
+function p1GetReservas() {
+  try {
+    return JSON.parse(localStorage.getItem(P1_KEY) || '[]');
+  } catch (e) {
+    return [];
+  }
+}
+
+function p1SaveReservas(arr) {
+  localStorage.setItem(P1_KEY, JSON.stringify(arr));
+}
+
+function p1ReservasDelDia(fecha) {
+  return p1GetReservas()
+    .filter(r => r.fecha === fecha && r.estado !== 'cancelada')
+    .sort((a, b) => a.hora.localeCompare(b.hora));
+}
+
+function p1OcupadasEnSlot(fecha, hora) {
+  return p1GetReservas().filter(r => r.fecha === fecha && r.hora === hora && r.estado !== 'cancelada').length;
+}
+
+function p1LibresEnSlot(fecha, hora) {
+  return Math.max(0, P1_TOTAL_MESAS - p1OcupadasEnSlot(fecha, hora));
+}
+
+// Devuelve los slots de un día con su disponibilidad, listos para pintar un <select>
+function p1SlotsConDisponibilidad(fecha) {
+  return P1_SLOTS.map(hora => ({
+    hora,
+    libres: p1LibresEnSlot(fecha, hora),
+    completo: p1LibresEnSlot(fecha, hora) === 0
+  }));
+}
+
+// Crea una reserva. Devuelve { ok: true, reserva } o { ok: false, motivo }
+function p1CrearReserva({ nombre, telefono, fecha, hora, personas }) {
+  if (p1LibresEnSlot(fecha, hora) <= 0) {
+    return { ok: false, motivo: 'Ese turno se ha completado mientras rellenabas el formulario. Elige otra hora.' };
+  }
+  const reserva = {
+    id: 'r_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7),
+    nombre,
+    telefono,
+    fecha,
+    hora,
+    personas,
+    estado: 'confirmada',
+    creada: new Date().toISOString()
+  };
+  const all = p1GetReservas();
+  all.push(reserva);
+  p1SaveReservas(all);
+  return { ok: true, reserva };
+}
+
+function p1CancelarReserva(id) {
+  const all = p1GetReservas().map(r => r.id === id ? { ...r, estado: 'cancelada' } : r);
+  p1SaveReservas(all);
+}
+
+function p1EliminarReserva(id) {
+  const all = p1GetReservas().filter(r => r.id !== id);
+  p1SaveReservas(all);
+}
+
+// Construye un link real de "Añadir a Google Calendar" (no requiere API ni login previo)
+function p1LinkGoogleCalendar({ nombre, fecha, hora, personas }) {
+  const [h, m] = hora.split(':').map(Number);
+  const start = new Date(fecha + 'T00:00:00');
+  start.setHours(h, m, 0, 0);
+  const end = new Date(start.getTime() + P1_DURACION_MESA_MIN * 60000);
+
+  const fmt = (d) => d.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
+
+  const params = new URLSearchParams({
+    action: 'TEMPLATE',
+    text: 'Reserva Pr1mera Planta — ' + nombre,
+    dates: fmt(start) + '/' + fmt(end),
+    details: 'Reserva para ' + personas + ' en Pr1mera Planta. Teléfono del restaurante: ' + P1_TELEFONO,
+    location: P1_DIRECCION
+  });
+
+  return 'https://calendar.google.com/calendar/render?' + params.toString();
+}
+</script>
+<script>
+  // ---------- Año dinámico ----------
+  document.getElementById('year').textContent = new Date().getFullYear();
+
+  // ---------- Header con scroll ----------
+  const header = document.getElementById('siteHeader');
+  const onScroll = () => {
+    if (window.scrollY > 30) {
+      header.classList.add('bg-ink/95', 'backdrop-blur-md', 'border-b', 'border-line');
+    } else {
+      header.classList.remove('bg-ink/95', 'backdrop-blur-md', 'border-b', 'border-line');
+    }
+  };
+  document.addEventListener('scroll', onScroll);
+  onScroll();
+
+  // ---------- Menú móvil ----------
+  const menuToggle = document.getElementById('menuToggle');
+  const mobileNav = document.getElementById('mobileNav');
+  menuToggle.addEventListener('click', () => {
+    mobileNav.classList.toggle('hidden');
+  });
+  document.querySelectorAll('.mobile-link').forEach(link => {
+    link.addEventListener('click', () => mobileNav.classList.add('hidden'));
+  });
+
+  // ---------- Tabs de la carta ----------
+  const tabs = document.querySelectorAll('.menu-tab');
+  const panels = document.querySelectorAll('.menu-panel');
+  tabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      tabs.forEach(t => t.classList.remove('active'));
+      panels.forEach(p => p.classList.remove('active'));
+      tab.classList.add('active');
+      document.getElementById('panel-' + tab.dataset.tab).classList.add('active');
+    });
+  });
+
+  // ---------- Reveal al hacer scroll ----------
+  const revealEls = document.querySelectorAll('.fade-up');
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('in-view');
+        io.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.15 });
+  revealEls.forEach(el => io.observe(el));
+
+  // ---------- Fecha mínima = hoy, y la dejamos preseleccionada ----------
+  const fechaInput = document.getElementById('fecha');
+  const horaInput = document.getElementById('hora'); // hidden input con el valor real
+  const turnoGrid = document.getElementById('turnoGrid');
+  const turnoWrap = document.getElementById('turnoWrap');
+  const aforoNota = document.getElementById('aforoNota');
+  const today = new Date().toISOString().split('T')[0];
+  fechaInput.setAttribute('min', today);
+  fechaInput.value = today;
+
+  // ---------- Pintar turnos disponibles como botones (no <select> nativo) ----------
+  function pintarTurnos() {
+    const fecha = fechaInput.value;
+    turnoGrid.innerHTML = '';
+    horaInput.value = '';
+
+    if (!fecha) {
+      aforoNota.textContent = 'Elige primero una fecha para ver los turnos.';
+      return;
+    }
+
+    const slots = p1SlotsConDisponibilidad(fecha);
+
+    slots.forEach(s => {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.dataset.hora = s.hora;
+      btn.disabled = s.completo;
+      btn.className = 'turno-btn rounded-lg border px-3 py-3 text-sm text-center transition ' +
+        (s.completo
+          ? 'border-line text-mute/30 cursor-not-allowed line-through'
+          : 'border-line text-cream hover:border-copper');
+      btn.innerHTML = `<span class="block font-medium">${s.hora}</span>
+        <span class="block text-[11px] mt-0.5 ${s.completo ? '' : 'text-mute'}">${s.completo ? 'Completo' : s.libres + ' libres'}</span>`;
+
+      if (!s.completo) {
+        btn.addEventListener('click', () => {
+          horaInput.value = s.hora;
+          turnoGrid.querySelectorAll('.turno-btn').forEach(b => {
+            b.classList.remove('bg-copper', 'border-copper', 'text-ink');
+          });
+          btn.classList.add('bg-copper', 'border-copper', 'text-ink');
+          clearError(horaInput);
+        });
+      }
+      turnoGrid.appendChild(btn);
+    });
+
+    aforoNota.textContent = `Aforo total: ${P1_TOTAL_MESAS} mesas por turno · se actualiza al confirmar cada reserva.`;
+  }
+  fechaInput.addEventListener('change', pintarTurnos);
+  pintarTurnos();
+
+  // ---------- Validación y envío del formulario ----------
+  const form = document.getElementById('reservaForm');
+  const modal = document.getElementById('successModal');
+  const successDetail = document.getElementById('successDetail');
+  const addToCalendar = document.getElementById('addToCalendar');
+  const closeModal = document.getElementById('closeModal');
+
+  function showError(input, message) {
+    const errorEl = input.parentElement.querySelector('.error-msg');
+    input.classList.add('border-red-400/70');
+    if (errorEl) {
+      errorEl.textContent = message;
+      errorEl.classList.remove('hidden');
+    }
+  }
+
+  function clearError(input) {
+    const errorEl = input.parentElement.querySelector('.error-msg');
+    input.classList.remove('border-red-400/70');
+    if (errorEl) errorEl.classList.add('hidden');
+  }
+
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+
+    const nombre = document.getElementById('nombre');
+    const telefono = document.getElementById('telefono');
+    const personas = document.getElementById('personas');
+    const fecha = fechaInput;
+    const hora = horaInput;
+
+    [nombre, telefono, personas, fecha, hora].forEach(clearError);
+
+    let valid = true;
+
+    if (nombre.value.trim().length < 3) {
+      showError(nombre, 'Introduce tu nombre completo.');
+      valid = false;
+    }
+
+    const phoneDigits = telefono.value.replace(/\s+/g, '');
+    if (!/^[6-9]\d{8}$/.test(phoneDigits)) {
+      showError(telefono, 'Introduce un teléfono válido (9 dígitos).');
+      valid = false;
+    }
+
+    if (!personas.value) {
+      showError(personas, 'Selecciona el número de personas.');
+      valid = false;
+    }
+
+    if (!fecha.value) {
+      showError(fecha, 'Selecciona una fecha.');
+      valid = false;
+    }
+
+    if (!hora.value) {
+      showError(hora, 'Selecciona un turno.');
+      valid = false;
+    }
+
+    if (!valid) return;
+
+    const resultado = p1CrearReserva({
+      nombre: nombre.value.trim(),
+      telefono: phoneDigits,
+      fecha: fecha.value,
+      hora: hora.value,
+      personas: personas.value
+    });
+
+    if (!resultado.ok) {
+      showError(hora, resultado.motivo);
+      pintarTurnos();
+      return;
+    }
+
+    const fechaFormateada = new Date(fecha.value + 'T00:00:00').toLocaleDateString('es-ES', {
+      weekday: 'long', day: 'numeric', month: 'long'
+    });
+
+    successDetail.textContent = `Hola ${nombre.value.trim().split(' ')[0]}, hemos reservado mesa para ${personas.value} el ${fechaFormateada} a las ${hora.value}h. Te llamaremos al ${telefono.value} para confirmar.`;
+    addToCalendar.href = p1LinkGoogleCalendar(resultado.reserva);
+
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+    requestAnimationFrame(() => modal.classList.remove('opacity-0'));
+
+    form.reset();
+    fechaInput.value = today;
+    pintarTurnos();
+  });
+
+  closeModal.addEventListener('click', () => {
+    modal.classList.add('opacity-0');
+    setTimeout(() => {
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }, 350);
+  });
+
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) closeModal.click();
+  });
+</script>
+
+</body>
+</html>

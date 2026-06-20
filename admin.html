@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Panel de Reservas · Pr1mera Planta</title>
+<meta name="robots" content="noindex, nofollow">
+
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          ink: '#19120D', surface: '#241A14', surface2: '#2D2018',
+          copper: '#C9854B', copperlight: '#E2A86C', sage: '#7E8F62',
+          cream: '#F4E9DA', mute: '#B6A493', line: 'rgba(244,233,218,0.12)',
+        },
+        fontFamily: { display: ['"Fraunces"', 'serif'], sans: ['"Inter"', 'sans-serif'] },
+      }
+    }
+  }
+</script>
+
+<style>
+  body { background-color: #19120D; }
+  .field-input:focus { outline: none; border-color: #C9854B; background-color: rgba(244,233,218,0.06); }
+  .bar-fill { transition: width .4s ease; }
+</style>
+</head>
+<body class="bg-ink text-cream font-sans antialiased min-h-screen">
+
+<!-- ============ LOGIN GATE ============ -->
+<div id="loginGate" class="min-h-screen flex items-center justify-center px-6">
+  <form id="loginForm" class="w-full max-w-sm bg-surface border border-line rounded-2xl p-8">
+    <p class="font-display text-2xl">Pr<span class="text-copperlight">1</span>mera Planta</p>
+    <p class="text-mute text-sm mt-1 mb-6">Panel de reservas — acceso interno</p>
+    <label for="pass" class="block text-xs eyebrow uppercase text-mute mb-2">Contraseña</label>
+    <input type="password" id="pass" class="field-input w-full bg-ink/60 border border-line rounded-lg px-4 py-3 text-cream mb-2" placeholder="••••••••">
+    <p id="loginError" class="hidden text-red-400 text-xs mb-3">Contraseña incorrecta.</p>
+    <button class="w-full bg-copper text-ink font-semibold px-6 py-3 rounded-full mt-2">Entrar</button>
+    <p class="text-mute/50 text-xs mt-5 leading-relaxed">Demo: contraseña <code class="text-copperlight">altorreal</code>. Cámbiala en el código antes de usar el panel en producción.</p>
+  </form>
+</div>
+
+<!-- ============ PANEL ============ -->
+<div id="panel" class="hidden">
+  <header class="border-b border-line">
+    <div class="max-w-6xl mx-auto px-6 py-5 flex items-center justify-between">
+      <div>
+        <p class="font-display text-xl">Panel de Reservas</p>
+        <p class="text-mute text-xs mt-0.5">Pr1mera Planta · Green Park Altorreal</p>
+      </div>
+      <div class="flex items-center gap-4">
+        <a href="index.html" class="text-mute text-sm hover:text-copperlight transition">Ver web</a>
+        <button id="logoutBtn" class="text-sm border border-line rounded-full px-4 py-2 hover:border-copper hover:text-copperlight transition">Salir</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-6xl mx-auto px-6 py-10">
+
+    <div class="bg-amber-200/10 border border-amber-300/30 text-amber-100 text-sm rounded-xl px-5 py-4 mb-8 leading-relaxed">
+      <strong>Modo demostración:</strong> estas reservas se guardan solo en este navegador (localStorage), no en un servidor compartido. Para ver aquí las reservas que hagan los clientes desde sus propios móviles hace falta conectar el sitio a una base de datos real — ver nota técnica al final de <code>reservas.js</code>.
+    </div>
+
+    <div class="flex flex-wrap items-end gap-4 mb-10">
+      <div>
+        <label for="fechaPanel" class="block text-xs eyebrow uppercase text-mute mb-2">Día</label>
+        <input type="date" id="fechaPanel" class="field-input bg-surface border border-line rounded-lg px-4 py-3 text-cream">
+      </div>
+      <div class="flex gap-2">
+        <button id="hoyBtn" class="text-sm border border-line rounded-full px-4 py-2.5 hover:border-copper hover:text-copperlight transition">Hoy</button>
+        <button id="mananaBtn" class="text-sm border border-line rounded-full px-4 py-2.5 hover:border-copper hover:text-copperlight transition">Mañana</button>
+      </div>
+      <div class="ml-auto text-right">
+        <p id="totalDia" class="font-display text-3xl text-copperlight">0</p>
+        <p class="text-xs eyebrow uppercase text-mute">mesas reservadas hoy</p>
+      </div>
+    </div>
+
+    <!-- Aforo por turno -->
+    <div id="aforoGrid" class="grid sm:grid-cols-4 gap-3 mb-12"></div>
+
+    <!-- Lista de reservas del día -->
+    <h2 class="font-display text-2xl mb-5">Reservas del día</h2>
+    <div id="listaReservas" class="space-y-3"></div>
+    <p id="vacioMsg" class="hidden text-mute text-sm border border-line rounded-xl p-8 text-center">No hay reservas para este día todavía.</p>
+
+  </main>
+</div>
+
+<script>
+/* === Motor de reservas (antes en reservas.js, ahora integrado aqui para que funcione sin depender de archivos externos) === */
+/* =========================================================
+   Pr1mera Planta — Motor de reservas (DEMO)
+   ---------------------------------------------------------
+   Esto es un PROTOTIPO funcional que guarda las reservas en
+   localStorage (solo en este navegador). Sirve para validar
+   la experiencia (aforo por turno, panel de admin, enlaces a
+   Google Calendar) antes de construir el backend real.
+
+   Para producción de verdad (que la reserva de un cliente
+   desde su móvil aparezca en el ordenador del restaurante,
+   y que lleguen emails automáticos) hace falta un servidor +
+   base de datos. Ver nota al final del archivo.
+   ========================================================= */
+
+const P1_KEY = 'p1_reservas_demo';
+const P1_TOTAL_MESAS = 20; // aforo total del local por turno
+const P1_DURACION_MESA_MIN = 90; // minutos que se considera ocupada una mesa
+const P1_SLOTS = ['20:00','20:30','21:00','21:30','22:00','22:30','23:00','23:30'];
+
+const P1_DIRECCION = 'C.C. Green Park Altorreal, Av. del Golf, 100, 30506 Molina de Segura, Murcia';
+const P1_TELEFONO = '677400400';
+
+function p1GetReservas() {
+  try {
+    return JSON.parse(localStorage.getItem(P1_KEY) || '[]');
+  } catch (e) {
+    return [];
+  }
+}
+
+function p1SaveReservas(arr) {
+  localStorage.setItem(P1_KEY, JSON.stringify(arr));
+}
+
+function p1ReservasDelDia(fecha) {
+  return p1GetReservas()
+    .filter(r => r.fecha === fecha && r.estado !== 'cancelada')
+    .sort((a, b) => a.hora.localeCompare(b.hora));
+}
+
+function p1OcupadasEnSlot(fecha, hora) {
+  return p1GetReservas().filter(r => r.fecha === fecha && r.hora === hora && r.estado !== 'cancelada').length;
+}
+
+function p1LibresEnSlot(fecha, hora) {
+  return Math.max(0, P1_TOTAL_MESAS - p1OcupadasEnSlot(fecha, hora));
+}
+
+// Devuelve los slots de un día con su disponibilidad, listos para pintar un <select>
+function p1SlotsConDisponibilidad(fecha) {
+  return P1_SLOTS.map(hora => ({
+    hora,
+    libres: p1LibresEnSlot(fecha, hora),
+    completo: p1LibresEnSlot(fecha, hora) === 0
+  }));
+}
+
+// Crea una reserva. Devuelve { ok: true, reserva } o { ok: false, motivo }
+function p1CrearReserva({ nombre, telefono, fecha, hora, personas }) {
+  if (p1LibresEnSlot(fecha, hora) <= 0) {
+    return { ok: false, motivo: 'Ese turno se ha completado mientras rellenabas el formulario. Elige otra hora.' };
+  }
+  const reserva = {
+    id: 'r_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7),
+    nombre,
+    telefono,
+    fecha,
+    hora,
+    personas,
+    estado: 'confirmada',
+    creada: new Date().toISOString()
+  };
+  const all = p1GetReservas();
+  all.push(reserva);
+  p1SaveReservas(all);
+  return { ok: true, reserva };
+}
+
+function p1CancelarReserva(id) {
+  const all = p1GetReservas().map(r => r.id === id ? { ...r, estado: 'cancelada' } : r);
+  p1SaveReservas(all);
+}
+
+function p1EliminarReserva(id) {
+  const all = p1GetReservas().filter(r => r.id !== id);
+  p1SaveReservas(all);
+}
+
+// Construye un link real de "Añadir a Google Calendar" (no requiere API ni login previo)
+function p1LinkGoogleCalendar({ nombre, fecha, hora, personas }) {
+  const [h, m] = hora.split(':').map(Number);
+  const start = new Date(fecha + 'T00:00:00');
+  start.setHours(h, m, 0, 0);
+  const end = new Date(start.getTime() + P1_DURACION_MESA_MIN * 60000);
+
+  const fmt = (d) => d.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
+
+  const params = new URLSearchParams({
+    action: 'TEMPLATE',
+    text: 'Reserva Pr1mera Planta — ' + nombre,
+    dates: fmt(start) + '/' + fmt(end),
+    details: 'Reserva para ' + personas + ' en Pr1mera Planta. Teléfono del restaurante: ' + P1_TELEFONO,
+    location: P1_DIRECCION
+  });
+
+  return 'https://calendar.google.com/calendar/render?' + params.toString();
+}
+</script>
+<script>
+  // ---------- Acceso ----------
+  const ADMIN_PASS = 'altorreal'; // ⚠️ cambia esto antes de usarlo en producción real
+  const loginGate = document.getElementById('loginGate');
+  const panel = document.getElementById('panel');
+  const loginForm = document.getElementById('loginForm');
+  const loginError = document.getElementById('loginError');
+
+  function mostrarPanel() {
+    loginGate.classList.add('hidden');
+    panel.classList.remove('hidden');
+    pintarTodo();
+  }
+
+  if (sessionStorage.getItem('p1_admin') === '1') {
+    mostrarPanel();
+  }
+
+  loginForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const val = document.getElementById('pass').value;
+    if (val === ADMIN_PASS) {
+      sessionStorage.setItem('p1_admin', '1');
+      loginError.classList.add('hidden');
+      mostrarPanel();
+    } else {
+      loginError.classList.remove('hidden');
+    }
+  });
+
+  document.getElementById('logoutBtn').addEventListener('click', () => {
+    sessionStorage.removeItem('p1_admin');
+    location.reload();
+  });
+
+  // ---------- Selector de día ----------
+  const fechaPanel = document.getElementById('fechaPanel');
+  const todayStr = new Date().toISOString().split('T')[0];
+  fechaPanel.value = todayStr;
+
+  function tomorrowStr() {
+    const d = new Date();
+    d.setDate(d.getDate() + 1);
+    return d.toISOString().split('T')[0];
+  }
+
+  document.getElementById('hoyBtn').addEventListener('click', () => { fechaPanel.value = todayStr; pintarTodo(); });
+  document.getElementById('mananaBtn').addEventListener('click', () => { fechaPanel.value = tomorrowStr(); pintarTodo(); });
+  fechaPanel.addEventListener('change', pintarTodo);
+
+  // ---------- Pintar aforo por turno ----------
+  function pintarAforo(fecha) {
+    const grid = document.getElementById('aforoGrid');
+    grid.innerHTML = '';
+    p1SlotsConDisponibilidad(fecha).forEach(s => {
+      const ocupadas = P1_TOTAL_MESAS - s.libres;
+      const pct = Math.round((ocupadas / P1_TOTAL_MESAS) * 100);
+      const div = document.createElement('div');
+      div.className = 'border border-line rounded-xl p-4';
+      div.innerHTML = `
+        <div class="flex items-baseline justify-between">
+          <span class="font-display text-lg">${s.hora}</span>
+          <span class="text-xs ${s.completo ? 'text-red-400' : 'text-mute'}">${ocupadas}/${P1_TOTAL_MESAS}</span>
+        </div>
+        <div class="h-1.5 bg-ink/60 rounded-full mt-3 overflow-hidden">
+          <div class="bar-fill h-full ${s.completo ? 'bg-red-400' : 'bg-copper'}" style="width:${pct}%"></div>
+        </div>`;
+      grid.appendChild(div);
+    });
+  }
+
+  // ---------- Pintar lista de reservas ----------
+  function pintarLista(fecha) {
+    const cont = document.getElementById('listaReservas');
+    const vacioMsg = document.getElementById('vacioMsg');
+    const reservas = p1ReservasDelDia(fecha);
+    cont.innerHTML = '';
+
+    document.getElementById('totalDia').textContent = reservas.length;
+
+    if (reservas.length === 0) {
+      vacioMsg.classList.remove('hidden');
+      return;
+    }
+    vacioMsg.classList.add('hidden');
+
+    reservas.forEach(r => {
+      const row = document.createElement('div');
+      row.className = 'border border-line rounded-xl p-5 flex flex-wrap items-center gap-4 justify-between';
+      row.innerHTML = `
+        <div class="flex items-center gap-4">
+          <span class="font-display text-xl text-copperlight w-16">${r.hora}</span>
+          <div>
+            <p class="font-medium">${r.nombre}</p>
+            <p class="text-mute text-xs mt-0.5">${r.personas} · ${r.telefono}</p>
+          </div>
+        </div>
+        <div class="flex items-center gap-2">
+          <a href="${p1LinkGoogleCalendar(r)}" target="_blank" rel="noopener"
+             class="text-xs border border-line rounded-full px-4 py-2 hover:border-copper hover:text-copperlight transition">
+            + Google Calendar
+          </a>
+          <a href="tel:${r.telefono}" class="text-xs border border-line rounded-full px-4 py-2 hover:border-copper hover:text-copperlight transition">
+            Llamar
+          </a>
+          <button data-id="${r.id}" class="cancelarBtn text-xs border border-red-400/30 text-red-300 rounded-full px-4 py-2 hover:bg-red-400/10 transition">
+            Cancelar
+          </button>
+        </div>`;
+      cont.appendChild(row);
+    });
+
+    document.querySelectorAll('.cancelarBtn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        if (confirm('¿Cancelar esta reserva? Se liberará la mesa en ese turno.')) {
+          p1CancelarReserva(btn.dataset.id);
+          pintarTodo();
+        }
+      });
+    });
+  }
+
+  function pintarTodo() {
+    const fecha = fechaPanel.value;
+    pintarAforo(fecha);
+    pintarLista(fecha);
+  }
+</script>
+</body>
+</html>
